@@ -1,13 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 #include <string.h>
 #include <time.h>
 #include <float.h>
-
-#define TRUE  1
-#define FALSE 0
-#define VERBOSE 0
 
 typedef struct {
   int id;
@@ -67,67 +64,6 @@ void plot_tour(Tour *tour) {
   }
 
   printf("\n");
-}
-
-// Imprime o Point no console
-void print_point(Point point) {
-  char table[62];
-
-  strcpy(table, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-
-  printf("%c", table[point.id % 62]);
-}
-
-// Imprime um mapa (array de pontos) no console
-void print_tour(Tour *tour) {
-  for (int i = 0; i < tour->map->size; i++) {
-    print_point(*tour->points[i]);
-  }
-}
-
-
-void print_crossover(Tour *parent1, Tour *parent2, int start, int end) {
-  // Imprimindo o Parent 1
-
-  printf("1: ");
-
-  for (int i = 0; i < parent1->map->size; i++) {
-    if (i >= start && i < end) {
-      print_point(*parent1->points[i]);
-    } else {
-      printf("_");
-    }
-  }
-
-  printf(" [%.2f]\n", parent1->distance);
-
-  // Imprimindo o Parent 2
-
-  printf("2: ");
-
-  for (int i = 0; i < parent2->map->size; i++) {
-    int remove = FALSE;
-
-    for (int j = start; j < end; j++) {
-      if (parent2->points[i]->id == parent1->points[j]->id) {
-        remove = TRUE;
-        break;
-      }
-    }
-
-    if (!remove) {
-      print_point(*parent2->points[i]);
-    } else {
-      printf("_");
-    }
-  }
-
-  printf(" [%.2f]\n", parent2->distance);
-}
-
-// Imprime uma População no console
-void print_population(Population population) {
-  printf("Population #1: [%.2f]\n\n", population.fittest->distance);
 }
 
 /* EVALUATORS */
@@ -275,11 +211,11 @@ void roulette_wheel(Population population, Population *selecteds) {
 
     // Calculate total to probability
     for (int i=0; i<population.size; i++) {
-      int already = FALSE;
+      bool already = false;
 
       for (int j=0; j<selected_num; j++) {
         if (selected_indexes[j] == i) {
-          already = TRUE;
+          already = true;
           break;
         }
       }
@@ -291,11 +227,11 @@ void roulette_wheel(Population population, Population *selecteds) {
 
     // Normalize probability
     for (int i=0; i<population.size; i++) {
-      int already = FALSE;
+      int already = false;
 
       for (int j=0; j<selected_num; j++) {
         if (selected_indexes[j] == i) {
-          already = TRUE;
+          already = true;
           break;
         }
       }
@@ -311,11 +247,11 @@ void roulette_wheel(Population population, Population *selecteds) {
 
     // Get individual who normalized fitness is lower than magic choosed number.
     for (int i=0; i<population.size; i++) {
-      int already = FALSE;
+      int already = false;
 
       for (int j=0; j<selected_num; j++) {
         if (selected_indexes[j] == i) {
-          already = TRUE;
+          already = true;
           break;
         }
       }
@@ -372,11 +308,11 @@ Tour crossover(Tour parent1, Tour parent2, float mutation_rate) {
       continue;
     } else {
       for (int j = j_stop; j < map_size; j++) {
-        int already = FALSE;
+        bool already = false;
 
         for (int z = start; z < end; z++) {
           if (parent2.points[j]->id == new_tour.points[z]->id) {
-            already = TRUE;
+            already = true;
             break;
           }
         }
@@ -404,15 +340,6 @@ Tour crossover(Tour parent1, Tour parent2, float mutation_rate) {
 
   calc_tour(&new_tour);
 
-  if (VERBOSE) {
-    printf("Crossover (%d to %d)\n", start, end);
-    print_crossover(&parent1, &parent2, start, end);
-
-    printf("R: ");
-    print_tour(&new_tour);
-    printf(" [%.2f]\n\n", new_tour.distance);
-  }
-
   return new_tour;
 }
 
@@ -433,7 +360,7 @@ TSPInstance read_tsp_lib(char *file_name) {
   }
 
   // Obtém o nome da instância
-  while (TRUE) {
+  while (true) {
     fgets(line, 255, file);
 
     if (sscanf(line, "NAME%*[ :] %s\n", instance.name) == 1)
@@ -441,7 +368,7 @@ TSPInstance read_tsp_lib(char *file_name) {
   }
 
   // Obtém a dimensão da instância
-  while (TRUE) {
+  while (true) {
     fgets(line, 255, file);
 
     if (sscanf(line, "DIMENSION%*[ :] %d\n", &instance.dimension) == 1)
@@ -449,7 +376,7 @@ TSPInstance read_tsp_lib(char *file_name) {
   }
 
   // obtém o tipo da instância
-  while (TRUE) {
+  while (true) {
     fgets(line, 255, file);
 
     if (sscanf(line, "EDGE_WEIGHT_TYPE%*[ :] %s\n", instance.edge_weight_type) == 1)
@@ -469,7 +396,7 @@ TSPInstance read_tsp_lib(char *file_name) {
   if (strcmp(instance.edge_weight_type, "EXPLICIT")) {
 
     // pula para a sessão de dados...
-    while (TRUE) {
+    while (true) {
       fgets(line, 255, file);
 
       if (!strcmp(line, "NODE_COORD_SECTION\n"))
@@ -562,7 +489,7 @@ TSPInstance read_tsp_lib(char *file_name) {
 
   // Se a matriz de custo estiver explicita...
   else {
-    while (TRUE) {
+    while (true) {
       fgets(line, 256, file);
 
       // Não entendi
@@ -637,9 +564,6 @@ Population ga(Map cities, int pop_size, int elitism, float mutation_rate, int re
   // Save initial distance
   double initial_distance = population_0.fittest->distance;
 
-  if (VERBOSE)
-    print_population(population_0);
-
   do {
     // Elitism logic
     int offset = 0;
@@ -659,9 +583,6 @@ Population ga(Map cities, int pop_size, int elitism, float mutation_rate, int re
     }
 
     calc_population(&population_n);
-
-    if (VERBOSE)
-      print_population(population_n);
 
     if (population_0.fittest->fitness != population_n.fittest->fitness)
       repeated_fitness = 0;
@@ -708,9 +629,9 @@ void write_tour(char filename[], TSPInstance *instance, Tour *tour) {
 /* MAIN */
 
 int main(int argc, char *argv[]) {
-  int elitism = TRUE;
+  int elitism = true;
   int pop_size = 10;
-  int plot = FALSE;
+  int plot = false;
   int repetitions = 200;
   float mutation_rate = 0.02;
 
@@ -756,7 +677,7 @@ int main(int argc, char *argv[]) {
       // params
 
       if (!strcmp(argv[i], "-p") || !strcmp(argv[i], "--plot")) {
-        plot = TRUE;
+        plot = true;
       }
 
       if (!strcmp(argv[i], "-m") || !strcmp(argv[i], "--mutation")) {
