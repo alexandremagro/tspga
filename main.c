@@ -227,7 +227,7 @@ void roulette_wheel(Population population, Population *selecteds) {
 
     // Normalize probability
     for (int i=0; i<population.size; i++) {
-      int already = false;
+      bool already = false;
 
       for (int j=0; j<selected_num; j++) {
         if (selected_indexes[j] == i) {
@@ -247,7 +247,7 @@ void roulette_wheel(Population population, Population *selecteds) {
 
     // Get individual who normalized fitness is lower than magic choosed number.
     for (int i=0; i<population.size; i++) {
-      int already = false;
+      bool already = false;
 
       for (int j=0; j<selected_num; j++) {
         if (selected_indexes[j] == i) {
@@ -629,9 +629,9 @@ void write_tour(char filename[], TSPInstance *instance, Tour *tour) {
 /* MAIN */
 
 int main(int argc, char *argv[]) {
-  int elitism = true;
+  bool elitism = true;
   int pop_size = 10;
-  int plot = false;
+  bool plot = false;
   int repetitions = 200;
   float mutation_rate = 0.02;
 
