@@ -98,7 +98,7 @@ void calc_population(Population *population) {
 
 // Aloca um array de Tours e retorna o array
 Population build_population(int size) {
-  Tour *tours = (Tour*) malloc(size * sizeof(Tour));
+  Tour *tours = malloc(size * sizeof(Tour));
   Population p;
 
   p.size = size;
@@ -113,11 +113,11 @@ Map build_map(double size) {
   Point *points;
   double** matrix;
 
-  points = (Point*) malloc(size * sizeof(Point));
-  matrix = (double**) malloc(size * sizeof(double*));
+  points = malloc(size * sizeof(Point));
+  matrix = malloc(size * sizeof(double*));
 
   for (int i = 0; i < size; ++i) {
-    matrix[i] = (double*) malloc(size * sizeof(double));
+    matrix[i] = malloc(size * sizeof(double));
   }
 
   map.points = points;
@@ -131,7 +131,7 @@ Map build_map(double size) {
 Tour generate_random_tour(Map *map) {
   Tour tour;
 
-  tour.points = (Point**) malloc(map->size * sizeof(Point*));
+  tour.points = malloc(map->size * sizeof(Point*));
   tour.map    = map;
 
   // Copy populate
@@ -155,7 +155,7 @@ Tour generate_random_tour(Map *map) {
 Tour copy_tour(Tour *src) {
   Tour dest;
 
-  dest.points = (Point**) malloc(src->map->size * sizeof(Point));
+  dest.points = malloc(src->map->size * sizeof(Point));
   dest.map = src->map;
 
   for (int i = 0; i < src->map->size; i++) {
@@ -195,9 +195,9 @@ void destroy_population(Population *population) {
 // Population should have length greater than one.
 void roulette_wheel(Population population, Population *selecteds) {
   int selected_num = 0;
-  int *selected_indexes = (int*) calloc(selecteds->size, sizeof(int));
+  int *selected_indexes = calloc(selecteds->size, sizeof(int));
 
-  double *normalized = (double*) calloc(population.size, sizeof(double));
+  double *normalized = calloc(population.size, sizeof(double));
   double sum   = 0;
   float acum   = 0;
   float choose = 0;
@@ -280,7 +280,7 @@ Tour crossover(Tour parent1, Tour parent2, float mutation_rate) {
   int map_size = parent1.map->size;
   Tour new_tour;
 
-  new_tour.points = (Point**) malloc(map_size * sizeof(Point*));
+  new_tour.points = malloc(map_size * sizeof(Point*));
   new_tour.map = parent1.map;
 
   int start = rand_in(0, map_size);
@@ -430,8 +430,8 @@ TSPInstance read_tsp_lib(char *file_name) {
       float *lat, *lon, min, q1, q2, q3;
       static double RRR = 6378.388;
 
-      lat = (float*) malloc(map.size * sizeof(float));
-      lon = (float*) malloc(map.size * sizeof(float));
+      lat = malloc(map.size * sizeof(float));
+      lon = malloc(map.size * sizeof(float));
 
       for(int i = 0; i < map.size; ++i) {
         deg = (int) map.points[i].x;
