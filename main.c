@@ -545,7 +545,7 @@ TSPInstance read_tsp_lib(char *file_name) {
 
 /* GENETIC ALGORITHM */
 
-Population ga(Map cities, int pop_size, int elitism, float mutation_rate, int repetitions) {
+Population ga(Map *cities, int pop_size, int elitism, float mutation_rate, int repetitions) {
   // Populacao Base (0) e População Evoluida (1)
   Population population_0 = build_population(pop_size);
   Population population_n = build_population(pop_size);
@@ -557,7 +557,7 @@ Population ga(Map cities, int pop_size, int elitism, float mutation_rate, int re
 
   // Generated fist generation
   for (int i = 0; i < pop_size; i++)
-    population_0.tours[i] = generate_random_tour(&cities);
+    population_0.tours[i] = generate_random_tour(cities);
 
   calc_population(&population_0);
 
@@ -638,6 +638,9 @@ int main(int argc, char *argv[]) {
   TSPInstance instance;
   Population best_population;
 
+  time_t start_t, end_t;
+  double diff_t;
+
   // init
   if (argc < 3) {
     printf("USE: %s <input filename> <output filename> [OPTIONS]\n", argv[0]);
@@ -701,7 +704,11 @@ int main(int argc, char *argv[]) {
   instance = read_tsp_lib(argv[1]);
 
   // Running Generic Algorith
-  best_population = ga(instance.map, pop_size, elitism, mutation_rate, repetitions);
+  time(&start_t);
+  best_population = ga(&instance.map, pop_size, elitism, mutation_rate, repetitions);
+  time(&end_t);
+
+  diff_t = difftime(end_t, start_t);
 
   // Plot
   if (plot)
