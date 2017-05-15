@@ -1,0 +1,1 @@
+gcc main.c tsplib.c genetic.c -flto -Ofast -march=native -mtune=native -lm -std=gnu99 -o ./bin/tspga && ./bin/tspga
