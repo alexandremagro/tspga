@@ -14,7 +14,7 @@ typedef struct {
 } Population;
 
 float rand_prob();
-int rand_in(int min, int len);
+int rand_in(int min, int max);
 void swap(void *a, void *b, size_t dataSize);
 Population build_population(int size);
 void destroy_population(Population *population);
