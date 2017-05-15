@@ -20,7 +20,7 @@ void plot_tour(Tour *tour) {
   printf("\n");
 }
 
-void write_tour(char filename[], Tour *tour) {
+void write_tour(char filename[], Tour *tour, double diff_t) {
   FILE *file = fopen(filename, "w");
 
   if (file == NULL) {
@@ -32,6 +32,7 @@ void write_tour(char filename[], Tour *tour) {
   fprintf(file, "TYPE: TOUR\n");
   fprintf(file, "DIMENSION: %d\n", tour->map->size);
   fprintf(file, "DISTANCE: %.2f\n", tour->distance);
+  fprintf(file, "TIME: %f\n", diff_t);
   fprintf(file, "TOUR_SECTION\n");
 
   for (int i = 0; i < tour->map->size; i++) {
@@ -45,8 +46,9 @@ void write_tour(char filename[], Tour *tour) {
 /* MAIN */
 
 int main(int argc, char *argv[]) {
+  bool freeze = false;
   bool elitism = true;
-  int pop_size = 10;
+  int pop_size = 16;
   bool plot = false;
   int repetitions = 200;
   float mutation_rate = 0.02;
@@ -54,7 +56,7 @@ int main(int argc, char *argv[]) {
   Map map;
   Population best_population;
 
-  time_t start_t, end_t;
+  clock_t start_t, end_t;
   double diff_t;
 
   // init
@@ -63,8 +65,9 @@ int main(int argc, char *argv[]) {
     printf("OPTIONS:\n");
     printf("  %-18s %s\n", "-p, --plot", "plot an array of ID,X,Y of the best tour");
     printf("  %-18s %s\n", "-m, --mutation", "Set mutation rate [0.02]");
-    printf("  %-18s %s\n", "-s, --size", "Set population size [10]");
+    printf("  %-18s %s\n", "-s, --size", "Set population size [16]");
     printf("  %-18s %s\n", "-r, --repetitions", "How many times repeat the best way? [200]");
+    printf("  %-18s %s\n", "-f, --freeze", "Deny seed random");
     exit(-1);
   }
 
@@ -113,25 +116,32 @@ int main(int argc, char *argv[]) {
         argument_param = 1;
         continue;
       }
+
+      if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--freeze")) {
+        freeze = true;
+      }
     }
   }
+
+  if (!freeze)
+    srand(time(NULL));
 
   // Reading TspLib
   map = read_tsp_lib(argv[1]);
 
   // Running Generic Algorith
-  time(&start_t);
+  start_t = clock();
   best_population = ga(&map, pop_size, elitism, mutation_rate, repetitions);
-  time(&end_t);
+  end_t = clock();
 
-  diff_t = difftime(end_t, start_t);
+  diff_t = (double) (end_t - start_t) / CLOCKS_PER_SEC;
 
   // Plot
   if (plot)
     plot_tour(best_population.fittest);
 
   // Write
-  write_tour(argv[2], best_population.fittest);
+  write_tour(argv[2], best_population.fittest, diff_t);
 
   // Finish
   destroy_population(&best_population);
