@@ -8,7 +8,6 @@ typedef struct {
   Point *points;
 } Map;
 
-void build_map(Map *map, double size);
 void destroy_map(Map *map);
 Map read_tsp_lib(char *file_name);
 

@@ -7,15 +7,6 @@
 #include "point.h"
 #include "tsplib.h"
 
-void build_map(Map *map, double size) {
-  map->points = malloc(size * sizeof(Point));
-  map->cost_matrix = malloc(size * sizeof(double*));
-  map->size = size;
-
-  for (int i = 0; i < size; ++i)
-    map->cost_matrix[i] = malloc(size * sizeof(double));
-}
-
 void destroy_map(Map *map) {
   for (int i = 0; i < map->size; i++) {
     free(map->cost_matrix[i]);
@@ -65,9 +56,13 @@ Map read_tsp_lib(char *file_name) {
     sscanf(line, "EDGE_WEIGHT_FORMAT%*[ :] %s\n", map.edge_weight_format);
   }
 
-  // construindo a matrix com a dimensão informada
+  // alocando os pontos e a matriz de custo
 
-  build_map(&map, map.size);
+  map.points = malloc(map.size * sizeof(Point));
+  map.cost_matrix = malloc(map.size * sizeof(double*));
+
+  for (int i = 0; i < map.size; ++i)
+    map.cost_matrix[i] = malloc(map.size * sizeof(double));
 
   // Se a matriz de custo NÃO estiver explicita...
   if (strcmp(map.edge_weight_type, "EXPLICIT")) {
