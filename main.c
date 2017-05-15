@@ -46,12 +46,14 @@ void write_tour(char filename[], Tour *tour, double diff_t) {
 /* MAIN */
 
 int main(int argc, char *argv[]) {
+  bool output = false;
   bool freeze = false;
   bool elitism = true;
   int pop_size = 16;
   bool plot = false;
   int repetitions = 200;
   float mutation_rate = 0.02;
+  char *output_filename;
 
   Map map;
   Population best_population;
@@ -60,9 +62,10 @@ int main(int argc, char *argv[]) {
   double diff_t;
 
   // init
-  if (argc < 3) {
-    printf("USE: %s <input filename> <output filename> [OPTIONS]\n", argv[0]);
+  if (argc < 2) {
+    printf("USE: %s <input filename> [OPTIONS]\n", argv[0]);
     printf("OPTIONS:\n");
+    printf("  %-18s %s\n", "-o, --output", "default output to TSP Lib");
     printf("  %-18s %s\n", "-p, --plot", "plot an array of ID,X,Y of the best tour");
     printf("  %-18s %s\n", "-m, --mutation", "Set mutation rate [0.02]");
     printf("  %-18s %s\n", "-s, --size", "Set population size [16]");
@@ -72,14 +75,17 @@ int main(int argc, char *argv[]) {
   }
 
   // reading optional params
-  if (argc > 3) {
+  if (argc > 2) {
     int argument_param = 0;
 
     for (int i = 0; i < argc; i++) {
       // param arguments
 
       if (argument_param == 1) {
-        sscanf(argv[i], "%d", &repetitions);
+        output = true;
+        output_filename = malloc(strlen(argv[i]) + 1);
+        strcpy(output_filename, argv[i]);
+
         argument_param = 0;
         continue;
       }
@@ -96,7 +102,19 @@ int main(int argc, char *argv[]) {
         continue;
       }
 
+      if (argument_param == 4) {
+        sscanf(argv[i], "%d", &repetitions);
+        argument_param = 0;
+        continue;
+      }
+
       // params
+
+      if (!strcmp(argv[i], "-o") || !strcmp(argv[i], "--output")) {
+        output = true;
+        argument_param = 1;
+        continue;
+      }
 
       if (!strcmp(argv[i], "-p") || !strcmp(argv[i], "--plot")) {
         plot = true;
@@ -113,7 +131,7 @@ int main(int argc, char *argv[]) {
       }
 
       if (!strcmp(argv[i], "-r") || !strcmp(argv[i], "--repetitions")) {
-        argument_param = 1;
+        argument_param = 4;
         continue;
       }
 
@@ -141,7 +159,10 @@ int main(int argc, char *argv[]) {
     plot_tour(best_population.fittest);
 
   // Write
-  write_tour(argv[2], best_population.fittest, diff_t);
+  if (output) {
+    write_tour(output_filename, best_population.fittest, diff_t);
+    free(output_filename);
+  }
 
   // Finish
   free_population(&best_population);
