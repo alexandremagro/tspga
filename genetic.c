@@ -60,14 +60,13 @@ void free_population(Population *population) {
 Tour copy_tour(Tour *src) {
   Tour dest;
 
-  dest.points = malloc(src->map->size * sizeof(Point));
-  dest.map = src->map;
+  dest.points   = malloc(src->map->size * sizeof(Point));
+  dest.map      = src->map;
+  dest.distance = src->distance;
+  dest.fitness  = src->fitness;
 
-  for (int i = 0; i < src->map->size; i++) {
+  for (int i = 0; i < src->map->size; i++)
     dest.points[i] = src->points[i];
-  }
-
-  calc_tour(&dest);
 
   return dest;
 }
@@ -84,17 +83,14 @@ void calc_tour(Tour *tour) {
 }
 
 void calc_population(Population *population) {
-  double best_val = 0;
-  int    best_pos = 0;
+  double highest_fitness = 0;
 
   for (int i = 0; i < population->size; i++) {
-    if (population->tours[i].fitness > best_val) {
-      best_val = population->tours[i].fitness;
-      best_pos = i;
+    if (population->tours[i].fitness > highest_fitness) {
+      highest_fitness = population->tours[i].fitness;
+      population->fittest = &population->tours[i];
     }
   }
-
-  population->fittest = &population->tours[best_pos];
 }
 
 // Gera um Tour para um objeto Map, calcula os valores e o retorna
@@ -278,7 +274,7 @@ Tour crossover(Tour parent1, Tour parent2, float mutation_rate) {
 
 /* GENETIC ALGORITHM */
 
-Population ga(Map *cities, int pop_size, int elitism, float mutation_rate, int repetitions) {
+Population ga(Map *map, int pop_size, int elitism, float mutation_rate, int repetitions) {
   // Populacao Base (0) e População Evoluida (1)
   Population population_0 = alloc_population(pop_size);
   Population parents      = alloc_population(2);
@@ -289,7 +285,7 @@ Population ga(Map *cities, int pop_size, int elitism, float mutation_rate, int r
 
   // Generated fist generation
   for (int i = 0; i < pop_size; i++)
-    population_0.tours[i] = generate_random_tour(cities);
+    population_0.tours[i] = generate_random_tour(map);
 
   calc_population(&population_0);
 
