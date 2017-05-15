@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include <math.h>
 
@@ -31,12 +32,11 @@ int rand_in(int min, int len) {
 }
 
 void swap(void *a, void *b, size_t dataSize) {
-  void *t = malloc(dataSize);
+  uint8_t t[dataSize];
 
   memcpy(t, a, dataSize);
   memcpy(a, b, dataSize);
   memcpy(b, t, dataSize);
-  free(t);
 }
 
 // Aloca um array de Tours e retorna o array
