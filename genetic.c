@@ -84,7 +84,6 @@ void calc_tour(Tour *tour) {
 }
 
 void calc_population(Population *population) {
-  Tour tour;
   double best_val = 0;
   int    best_pos = 0;
 
@@ -293,9 +292,6 @@ Population ga(Map *cities, int pop_size, int elitism, float mutation_rate, int r
     population_0.tours[i] = generate_random_tour(cities);
 
   calc_population(&population_0);
-
-  // Save initial distance
-  double initial_distance = population_0.fittest->distance;
 
   do {
     Population population_n = build_population(pop_size);
