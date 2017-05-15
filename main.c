@@ -144,8 +144,8 @@ int main(int argc, char *argv[]) {
   write_tour(argv[2], best_population.fittest, diff_t);
 
   // Finish
-  destroy_population(&best_population);
-  destroy_map(&map);
+  free_population(&best_population);
+  free_map(&map);
 
   return 0;
 }

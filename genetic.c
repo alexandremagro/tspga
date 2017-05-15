@@ -40,7 +40,7 @@ void swap(void *a, void *b, size_t dataSize) {
 }
 
 // Aloca um array de Tours e retorna o array
-Population build_population(int size) {
+Population alloc_population(int size) {
   Population p;
 
   p.size  = size;
@@ -49,7 +49,7 @@ Population build_population(int size) {
   return p;
 }
 
-void destroy_population(Population *population) {
+void free_population(Population *population) {
   for (int i = 0; i < population->size; i++) {
     free(population->tours[i].points);
   }
@@ -280,8 +280,8 @@ Tour crossover(Tour parent1, Tour parent2, float mutation_rate) {
 
 Population ga(Map *cities, int pop_size, int elitism, float mutation_rate, int repetitions) {
   // Populacao Base (0) e População Evoluida (1)
-  Population population_0 = build_population(pop_size);
-  Population parents      = build_population(2);
+  Population population_0 = alloc_population(pop_size);
+  Population parents      = alloc_population(2);
 
   // Ending condition vars
   int repeated_fitness = 0;
@@ -294,7 +294,7 @@ Population ga(Map *cities, int pop_size, int elitism, float mutation_rate, int r
   calc_population(&population_0);
 
   do {
-    Population population_n = build_population(pop_size);
+    Population population_n = alloc_population(pop_size);
 
     // Elitism logic
     int i = 0;
@@ -323,7 +323,7 @@ Population ga(Map *cities, int pop_size, int elitism, float mutation_rate, int r
     // 4. Repeat
     swap(&population_0, &population_n, sizeof(Population));
 
-    destroy_population(&population_n);
+    free_population(&population_n);
 
     cicles++;
 

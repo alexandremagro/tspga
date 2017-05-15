@@ -16,8 +16,8 @@ typedef struct {
 float rand_prob();
 int rand_in(int min, int len);
 void swap(void *a, void *b, size_t dataSize);
-Population build_population(int size);
-void destroy_population(Population *population);
+Population alloc_population(int size);
+void free_population(Population *population);
 Tour copy_tour(Tour *src);
 Tour generate_random_tour(Map *map);
 void calc_tour(Tour *tour);
