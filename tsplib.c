@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <math.h>
+#include <float.h>
 
 #include "point.h"
 #include "tsplib.h"
@@ -161,6 +162,18 @@ Map read_tsp_lib(char *file_name) {
 
   // Se a matriz de custo estiver explicita...
   else {
+
+    // Cria os pontos implicitos somente para setar o ID
+    for (int i = 0; i < map.size; ++i) {
+      Point point;
+
+      point.id = i + 1;
+      point.x = 0;
+      point.y = 0;
+
+      map.points[i] = point;
+    }
+
     while (true) {
       fgets(line, 256, file);
 
@@ -207,6 +220,9 @@ Map read_tsp_lib(char *file_name) {
       }
     }
   }
+
+  for(int i = 0; i < map.size; ++i)
+    map.cost_matrix[i][i] = DBL_MAX;
 
   fclose(file);
 

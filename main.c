@@ -4,7 +4,6 @@
 #include <math.h>
 #include <string.h>
 #include <time.h>
-#include <float.h>
 
 #include "point.h"
 #include "tsplib.h"

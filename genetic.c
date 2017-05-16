@@ -96,7 +96,6 @@ void calc_population(Population *population) {
 // Gera um Tour para um objeto Map, calcula os valores e o retorna
 Tour generate_random_tour(Map *map) {
   Tour tour;
-
   tour.points = malloc(map->size * sizeof(Point*));
   tour.map    = map;
 
@@ -299,7 +298,6 @@ Population ga(Map *map, int pop_size, int elitism, float mutation_rate, int repe
       population_n.tours[0] = copy_tour(population_0.fittest);
       i++;
     }
-
     for (; i < pop_size; i++) {
       // 2. Evaluation and Selections
 
