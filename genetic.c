@@ -10,12 +10,12 @@
 #include "genetic.h"
 
 // Rand a number from 0 to 1
-float rand_prob() {
+static float rand_prob() {
   return  (float) rand() / (RAND_MAX);
 }
 
 // Rand a number from min to (min+len)
-int rand_in(int min, int len) {
+static int rand_in(int min, int len) {
   int r;
   const int range = len - min;
   const int buckets = RAND_MAX / range;
@@ -31,7 +31,7 @@ int rand_in(int min, int len) {
   return min + (r / buckets);
 }
 
-void swap(void *a, void *b, size_t dataSize) {
+static void swap(void *a, void *b, size_t dataSize) {
   uint8_t t[dataSize];
 
   memcpy(t, a, dataSize);
@@ -39,25 +39,7 @@ void swap(void *a, void *b, size_t dataSize) {
   memcpy(b, t, dataSize);
 }
 
-// Aloca um array de Tours e retorna o array
-Population alloc_population(int size) {
-  Population p;
-
-  p.size  = size;
-  p.tours = malloc(size * sizeof(Tour));;
-
-  return p;
-}
-
-void free_population(Population *population) {
-  for (int i = 0; i < population->size; i++) {
-    free(population->tours[i].points);
-  }
-
-  free(population->tours);
-}
-
-Tour copy_tour(Tour *src) {
+static Tour copy_tour(Tour *src) {
   Tour dest;
 
   dest.points   = malloc(src->map->size * sizeof(Point));
@@ -71,7 +53,7 @@ Tour copy_tour(Tour *src) {
   return dest;
 }
 
-void calc_tour(Tour *tour) {
+static void calc_tour(Tour *tour) {
   double distance = 0;
 
   for (int i = 1; i < tour->map->size; i++) {
@@ -82,7 +64,7 @@ void calc_tour(Tour *tour) {
   tour->fitness  = 1 / distance;
 }
 
-void calc_population(Population *population) {
+static void calc_population(Population *population) {
   double highest_fitness = 0;
 
   for (int i = 0; i < population->size; i++) {
@@ -94,7 +76,7 @@ void calc_population(Population *population) {
 }
 
 // Gera um Tour para um objeto Map, calcula os valores e o retorna
-Tour generate_random_tour(Map *map) {
+static Tour generate_random_tour(Map *map) {
   Tour tour;
   tour.points = malloc(map->size * sizeof(Point*));
   tour.map    = map;
@@ -120,7 +102,7 @@ Tour generate_random_tour(Map *map) {
 /* SELECTIONS */
 
 // Population should have length greater than one.
-void roulette_wheel(Population *population, Population *selecteds) {
+static void roulette_wheel(Population *population, Population *selecteds) {
   int num_of_selected = 0;
   int *selected_indexes = calloc(selecteds->size, sizeof(int));
 
@@ -201,7 +183,7 @@ void roulette_wheel(Population *population, Population *selecteds) {
 
 // Parent1 and Parent2 should to be the same length
 // Parent1 and Parent1 should have length greater than zero.
-Tour crossover(Tour parent1, Tour parent2, float mutation_rate) {
+static Tour crossover(Tour parent1, Tour parent2, float mutation_rate) {
   if (parent1.map != parent2.map)
     exit(-1);
 
@@ -269,6 +251,25 @@ Tour crossover(Tour parent1, Tour parent2, float mutation_rate) {
   calc_tour(&new_tour);
 
   return new_tour;
+}
+
+/* Constructors and Destructors */
+
+Population alloc_population(int size) {
+  Population p;
+
+  p.size  = size;
+  p.tours = malloc(size * sizeof(Tour));;
+
+  return p;
+}
+
+void free_population(Population *population) {
+  for (int i = 0; i < population->size; i++) {
+    free(population->tours[i].points);
+  }
+
+  free(population->tours);
 }
 
 /* GENETIC ALGORITHM */

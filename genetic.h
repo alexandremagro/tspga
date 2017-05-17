@@ -13,17 +13,8 @@ typedef struct {
   Tour *fittest;
 } Population;
 
-float rand_prob();
-int rand_in(int min, int len);
-void swap(void *a, void *b, size_t dataSize);
 Population alloc_population(int size);
 void free_population(Population *population);
-Tour copy_tour(Tour *src);
-Tour generate_random_tour(Map *map);
-void calc_tour(Tour *tour);
-void calc_population(Population *population);
-void roulette_wheel(Population *population, Population *selecteds);
-Tour crossover(Tour parent1, Tour parent2, float mutation_rate);
 Population ga(Map *cities, int pop_size, int elitism, float mutation_rate, int repetitions);
 
 #endif
