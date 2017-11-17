@@ -59,6 +59,8 @@ static void calc_tour(Tour *tour) {
     distance += tour->map->cost_matrix[tour->points[i]->id - 1][tour->points[i - 1]->id - 1];
   }
 
+  distance += tour->map->cost_matrix[tour->points[0]->id - 1][tour->points[tour->map->size - 1]->id - 1];
+
   tour->distance = distance;
   tour->fitness  = 1 / distance;
 }
