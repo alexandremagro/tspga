@@ -1,0 +1,6 @@
+# ruby main.rb ./tspga-default 1000 default1k
+# ruby main.rb ./tspga-default 10000 default10k
+# ruby main.rb ./tspga-default 100000 default100k
+ruby main.rb ./tspga-adversity 1000 adversity1k
+ruby main.rb ./tspga-adversity 10000 adversity10k
+ruby main.rb ./tspga-adversity 100000 adversity100k
